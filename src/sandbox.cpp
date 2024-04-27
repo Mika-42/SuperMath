@@ -34,7 +34,15 @@ int main()
     // A.det(); // 3
     //A.print();
     smath::Matrix::identity(2).inv().print();
-    std::cout << "A[0, 0] = " << A[0, 0] << std::endl; // 0
+    A.com();
+    A.det();
+    //A.diag();
+    A.inv();
+    A.pow(2);
+    A.print();
+    A.T();
+
+    //std::cout << "A[0, 0] = " << A.det() << std::endl; // 0
     
     //B.print();
     //std::cout << "|B| = " << B.det() << std::endl << std::endl; // -12

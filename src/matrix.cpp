@@ -2,10 +2,11 @@
 
 namespace smath
 {
+    static bool areVector2dDimensionsEqual(const t_2dVector &lhs, const t_2dVector &rhs);
 
-    Matrix::Matrix(std::size_t rows, std::size_t cols, t_cmplx scalar = 0.0 + 0i) : m_rows{rows},
-                                                                                    m_cols{cols},
-                                                                                    m_array(m_rows, std::vector<t_cmplx>(m_cols, scalar))
+    Matrix::Matrix(std::size_t rows, std::size_t cols, t_cmplx scalar) : m_rows{rows},
+                                                                         m_cols{cols},
+                                                                         m_array(m_rows, std::vector<t_cmplx>(m_cols, scalar))
     {
         if (m_rows < 1 or m_cols < 1)
         {
@@ -13,7 +14,7 @@ namespace smath
         }
     }
 
-    constexpr t_cmplx &operator[](std::size_t row, std::size_t col)
+    t_cmplx &Matrix::operator[](std::size_t row, std::size_t col)
     {
         return m_array[row][col];
     }
@@ -191,23 +192,33 @@ namespace smath
     {
         Matrix ret(matrix.m_rows, matrix.m_cols, scalar);
 
-        return superOperator(matrix, ret, [](t_cmplx lhs, t_cmplx rhs)
+        return Matrix::superOperator(matrix, ret, [](t_cmplx lhs, t_cmplx rhs)
                              { return lhs * rhs; });
     }
 
     Matrix operator+(const Matrix &lhs, const Matrix &rhs)
     {
-        return superOperator(lhs, rhs, [](t_cmplx lhs, t_cmplx rhs)
+        return Matrix::superOperator(lhs, rhs, [](t_cmplx lhs, t_cmplx rhs)
                              { return lhs + rhs; });
     }
 
     Matrix operator-(const Matrix &lhs, const Matrix &rhs)
     {
-        return superOperator(lhs, rhs, [](t_cmplx lhs, t_cmplx rhs)
+        return Matrix::superOperator(lhs, rhs, [](t_cmplx lhs, t_cmplx rhs)
                              { return lhs - rhs; });
     }
 
-    Matrix superOperator(const Matrix &lhs, const Matrix &rhs, std::function<t_cmplx(t_cmplx, t_cmplx)> op)
+    bool Matrix::operator==(const Matrix &matrix)
+    {
+        return m_array == matrix.m_array;
+    }
+
+    bool Matrix::operator!=(const Matrix &matrix)
+    {
+        return not(*this == matrix);
+    }
+    
+    Matrix Matrix::superOperator(const Matrix &lhs, const Matrix &rhs, std::function<t_cmplx(t_cmplx, t_cmplx)> op)
     {
         if (not(lhs.m_cols == rhs.m_cols and lhs.m_rows == rhs.m_rows))
         {
@@ -227,7 +238,7 @@ namespace smath
         return ret;
     }
 
-    Matrix decreaseDegrees(const Matrix &matrix, std::size_t row, std::size_t col)
+    Matrix Matrix::decreaseDegrees(const Matrix &matrix, std::size_t row, std::size_t col)
     {
         Matrix subMatrix = matrix;
         subMatrix.m_array.erase(subMatrix.m_array.begin() + row);
@@ -239,7 +250,7 @@ namespace smath
         return subMatrix;
     }
 
-    t_cmplx det(const Matrix &matrix)
+    t_cmplx Matrix::det(const Matrix &matrix)
     {
         if (matrix.m_cols != matrix.m_rows)
         {
@@ -277,7 +288,7 @@ namespace smath
         return ret;
     }
 
-    bool areVector2dDimensionsEqual(const t_2dVector &lhs, const t_2dVector &rhs)
+    static bool areVector2dDimensionsEqual(const t_2dVector &lhs, const t_2dVector &rhs)
     {
         if (lhs.size() != rhs.size())
         {
